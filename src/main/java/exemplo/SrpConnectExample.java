@@ -1,113 +1,94 @@
 package exemplo;
 
-import cl.tradelink.realtick.UtilitiesRealtick;
-import cl.tradelink.realtick.UtilityServicesGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
-import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.ApplicationProtocolConfig;
+import io.grpc.netty.shaded.io.netty.handler.ssl.ApplicationProtocolNames;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
+import realtick.grpc.*;
 
-import java.io.File;
-import java.io.IOException;
+
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class SrpConnectExample {
 
-    private String password = "Vector.2023";
-    private String server = "AMERICASGW.taltrade.com";
-    private String user = "FRICCI";
-    private String domain = "VECTORCAP";
-    private String locale = "inhouse americas";
-    private int port = Integer.parseInt("9000");
+    private String password = "test123";
+    private String server = "EMSUATXAPI.taltrade.com";
+    private String user = "USER13";
+    private String domain = "XAPIDEMO";
+    private String locale = "Inhouse Americas";
+    private int port = 9000; // No es necesario convertir explícitamente una cadena a entero
 
     private ManagedChannel channel;
-    private UtilityServicesGrpc.UtilityServicesBlockingStub utilStub;
+    private UtilityServicesGrpc.UtilityServicesBlockingStub blockingStub;
 
-    public void run() throws IOException {
-
-        channel = NettyChannelBuilder.forAddress(server, port)
-                .sslContext(GrpcSslContexts.forClient().trustManager(new File(SrpConnectExample.class.getResource("/roots.pem").getFile())).build())
-                .build();
-
-        utilStub = UtilityServicesGrpc.newBlockingStub(channel);
-
-        UtilitiesRealtick.StartLoginSrpRequest srpStartRequest = UtilitiesRealtick.StartLoginSrpRequest.newBuilder()
-                .setUserName(user)
-                .setDomain(domain)
-                .build();
-
-        UtilitiesRealtick.StartLoginSrpResponse srpStartResponse = null;
-
+    public void run() {
         try {
+            // Configuración del contexto SSL
+            SslContext sslContext = SslContextBuilder.forClient()
+                    .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                    .applicationProtocolConfig(new ApplicationProtocolConfig(
+                            ApplicationProtocolConfig.Protocol.ALPN,
+                            ApplicationProtocolConfig.SelectorFailureBehavior.NO_ADVERTISE,
+                            ApplicationProtocolConfig.SelectedListenerFailureBehavior.ACCEPT,
+                            ApplicationProtocolNames.HTTP_2,
+                            ApplicationProtocolNames.HTTP_1_1))
+                    .build();
 
-            srpStartResponse = utilStub.startLoginSrp(srpStartRequest);
-            log.info("Start SRP result: " + srpStartResponse.getResponse());
+            // Construcción del canal gRPC
+            channel = NettyChannelBuilder.forAddress(server, port)
+                    .sslContext(sslContext)
+                    .build();
 
-        } catch (StatusRuntimeException e) {
-            log.warn("RPC failed: {0}", e.getStatus());
-            return;
-        }
+            // Crear un stub usando el canal
+            blockingStub = UtilityServicesGrpc.newBlockingStub(channel);
 
-        if ("success".equals(srpStartResponse.getResponse())) {
-
-            String identity = user + "@" + domain;
-            String gHex = srpStartResponse.getSrpg();
-            String nHex = srpStartResponse.getSrpN();
-
-
-            /*
-            srp.rfc5054_enable(true);
-            User usr = new User(identity, password, srp.SHA256, srp.NG_CUSTOM, nHex, gHex);
-            srp.rfc5054_enable(false);
-
-            byte[] A = usr.startAuthentication();
-
-            byte[] bytesB = new BigInteger(srpStartResponse.getSrpb()).toByteArray();
-            byte[] bytesS = new BigInteger(srpStartResponse.getSrpSalt(), 16).toByteArray();
-            byte[] M = usr.processChallenge(bytesS, bytesB);
-
-            String strMc = new BigInteger(1, M).toString(16);
-            String strEphA = new BigInteger(1, A).toString();
-            String srpTransactId = srpStartResponse.getSrpTransactId();
-
-
-
-            UtilitiesRealtick.CompleteLoginSrpRequest srpCompleteRequest = UtilitiesRealtick.CompleteLoginSrpRequest.newBuilder()
-                    .setIdentity(identity)
-                    .setSrpTransactId(srpTransactId)
-                    .setStrEphA(strEphA)
-                    .setStrMc(strMc)
+            // Crear solicitud de conexión
+            ConnectRequest connectRequest = ConnectRequest.newBuilder()
                     .setUserName(user)
                     .setDomain(domain)
+                    .setPassword(password)
                     .setLocale(locale)
                     .build();
 
-            UtilitiesRealtick.CompleteLoginSrpResponse connectResponse;
             try {
-                connectResponse = utilStub.completeLoginSrp(srpCompleteRequest);
+                // Enviar solicitud de conexión
+                ConnectResponse connectResponse = blockingStub.connect(connectRequest);
                 log.info("Connect result: " + connectResponse.getResponse());
-            } catch (StatusRuntimeException e) {
-                log.warn("RPC failed: {0}", e.getStatus());
-                return;
-            }
 
-            if ("success".equals(connectResponse.getResponse())) {
-                UtilitiesRealtick.DisconnectRequest disconnectRequest = UtilitiesRealtick.DisconnectRequest.newBuilder()
-                        .setUserToken(connectResponse.getUserToken())
-                        .build();
+                // Manejar la respuesta de conexión
+                if ("success".equals(connectResponse.getResponse())) {
+                    DisconnectRequest disconnectRequest = DisconnectRequest.newBuilder()
+                            .setUserToken(connectResponse.getUserToken())
+                            .build();
 
-                UtilitiesRealtick.DisconnectResponse disconnectResponse;
-                try {
-                    disconnectResponse = utilStub.disconnect(disconnectRequest);
-                    log.info("Disconnect result: " + disconnectResponse.getServerResponse());
-                } catch (StatusRuntimeException e) {
-                    log.warn("RPC failed: {0}", e.getStatus());
+                    try {
+                        // Enviar solicitud de desconexión
+                        DisconnectResponse disconnectResponse = blockingStub.disconnect(disconnectRequest);
+                        log.info("Disconnect result: " + disconnectResponse.getServerResponse());
+                    } catch (StatusRuntimeException e) {
+                        log.warn("RPC failed: {}", e.getStatus());
+                    }
+                } else {
+                    log.error("Connection failed: {}", connectResponse.getResponse());
+                    if ("UserNotPermissionedForApp".equals(connectResponse.getResponse())) {
+                        log.error("User does not have permission for the application. Please check user permissions.");
+                    } else {
+                        log.error("Unknown error: {}", connectResponse.getResponse());
+                    }
                 }
+
+            } catch (StatusRuntimeException e) {
+                log.error("RPC failed: {} {}", e.getStatus(), e);
             }
 
-             */
+        } catch (Exception e) {
+            log.error("Error setting up SSL context or gRPC channel: ", e);
         }
     }
 
@@ -117,10 +98,10 @@ public class SrpConnectExample {
         }
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws Exception {
         SrpConnectExample example = new SrpConnectExample();
         example.run();
-        Thread.sleep(30000);
+        Thread.sleep(30000);  // Espera para mantener la conexión abierta por un tiempo
         example.disconnect();
     }
 }

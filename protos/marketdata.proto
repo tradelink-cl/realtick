@@ -1,3 +1,4 @@
+// Version : "2024.4.0"
 
 syntax = "proto3";
 import "google/protobuf/wrappers.proto";
@@ -5,11 +6,11 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "utilities.proto";
 
-option java_package = "cl.tradelink.realtick";
-option java_outer_classname = "MarketDataRealtick";
+option java_multiple_files = true;
+option java_package = "realtick.grpc";
+option java_outer_classname = "MarketDataServicesProto";
+package realtick.grpc;
 
-
-// User defined data types and enumerations
 message OptionTypes{
   enum Options{
     CALL = 0;
