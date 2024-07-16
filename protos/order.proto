@@ -6,10 +6,6 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "utilities.proto";
 
-
-option java_multiple_files = true;
-option java_package = "realtick.grpc";
-option java_outer_classname = "OrderServicesProto";
 package realtick.grpc;
 
 

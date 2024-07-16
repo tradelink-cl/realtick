@@ -7,11 +7,12 @@ import io.grpc.netty.shaded.io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.grpc.netty.shaded.io.netty.handler.ssl.ApplicationProtocolNames;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
-import io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
-import realtick.grpc.*;
+import realtick.grpc.Utilities;
+import realtick.grpc.UtilityServicesGrpc;
 
-
+import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -21,75 +22,76 @@ public class SrpConnectExample {
     private String server = "EMSUATXAPI.taltrade.com";
     private String user = "USER13";
     private String domain = "XAPIDEMO";
-    private String locale = "Inhouse Americas";
-    private int port = 9000; // No es necesario convertir explícitamente una cadena a entero
+    private String locale = "inhouse americas";
+    private int port = 9000;
 
     private ManagedChannel channel;
     private UtilityServicesGrpc.UtilityServicesBlockingStub blockingStub;
 
     public void run() {
         try {
-            // Configuración del contexto SSL
+
+            // Cargar el archivo PEM desde resources
+            InputStream certInputStream = getClass().getClassLoader().getResourceAsStream("roots.pem");
+            if (certInputStream == null) {
+                log.error("Failed to load roots.pem_ from resources");
+                return;
+            }
+
             SslContext sslContext = SslContextBuilder.forClient()
-                    .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                    .trustManager(certInputStream)
                     .applicationProtocolConfig(new ApplicationProtocolConfig(
-                            ApplicationProtocolConfig.Protocol.ALPN,
+                            ApplicationProtocolConfig.Protocol.NPN_AND_ALPN,
                             ApplicationProtocolConfig.SelectorFailureBehavior.NO_ADVERTISE,
                             ApplicationProtocolConfig.SelectedListenerFailureBehavior.ACCEPT,
-                            ApplicationProtocolNames.HTTP_2,
-                            ApplicationProtocolNames.HTTP_1_1))
+                            ApplicationProtocolNames.HTTP_2))
                     .build();
 
-            // Construcción del canal gRPC
+            // Construcción del canal gRPC con SSL
             channel = NettyChannelBuilder.forAddress(server, port)
                     .sslContext(sslContext)
                     .build();
 
-            // Crear un stub usando el canal
             blockingStub = UtilityServicesGrpc.newBlockingStub(channel);
 
-            // Crear solicitud de conexión
-            ConnectRequest connectRequest = ConnectRequest.newBuilder()
+
+            Utilities.ConnectRequest startLoginSrpRequest = Utilities.ConnectRequest.newBuilder()
                     .setUserName(user)
                     .setDomain(domain)
-                    .setPassword(password)
                     .setLocale(locale)
+                    .setPassword(password)
                     .build();
 
             try {
-                // Enviar solicitud de conexión
-                ConnectResponse connectResponse = blockingStub.connect(connectRequest);
-                log.info("Connect result: " + connectResponse.getResponse());
+                Utilities.ConnectResponse  connect= blockingStub.connect(startLoginSrpRequest);
+                log.info("Start SRP result: " + connect.getResponse());
 
-                // Manejar la respuesta de conexión
-                if ("success".equals(connectResponse.getResponse())) {
-                    DisconnectRequest disconnectRequest = DisconnectRequest.newBuilder()
-                            .setUserToken(connectResponse.getUserToken())
-                            .build();
-
-                    try {
-                        // Enviar solicitud de desconexión
-                        DisconnectResponse disconnectResponse = blockingStub.disconnect(disconnectRequest);
-                        log.info("Disconnect result: " + disconnectResponse.getServerResponse());
-                    } catch (StatusRuntimeException e) {
-                        log.warn("RPC failed: {}", e.getStatus());
-                    }
-                } else {
-                    log.error("Connection failed: {}", connectResponse.getResponse());
-                    if ("UserNotPermissionedForApp".equals(connectResponse.getResponse())) {
-                        log.error("User does not have permission for the application. Please check user permissions.");
-                    } else {
-                        log.error("Unknown error: {}", connectResponse.getResponse());
-                    }
-                }
 
             } catch (StatusRuntimeException e) {
-                log.error("RPC failed: {} {}", e.getStatus(), e);
+                log.error("RPC failed: {0}", e.getStatus());
+            }
+
+
+            startLoginSrpRequest = Utilities.ConnectRequest.newBuilder()
+                    .setUserName(user)
+                    .setDomain(domain)
+                    .setLocale(locale)
+                    .setPassword(password)
+                    .build();
+
+            try {
+                Utilities.ConnectResponse srpStartResponse2 = blockingStub.connect(startLoginSrpRequest);
+                log.info("Start SRP result: " + srpStartResponse2.getResponse());
+
+            } catch (StatusRuntimeException e) {
+                log.error("RPC failed: {}", e.getStatus());
+                return;
             }
 
         } catch (Exception e) {
-            log.error("Error setting up SSL context or gRPC channel: ", e);
+            log.error(e.getMessage(), e);
         }
+
     }
 
     public void disconnect() throws InterruptedException {
