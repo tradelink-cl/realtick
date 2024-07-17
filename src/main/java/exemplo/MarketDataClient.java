@@ -58,8 +58,8 @@ public class MarketDataClient {
 
 
 
-        blockingStub = UtilityServicesGrpc.newBlockingStub(channel);
-        asyncStub = MarketDataServiceGrpc.newStub(channel);
+       // blockingStub = UtilityServicesGrpc.newBlockingStub(channel);
+        //asyncStub = MarketDataServiceGrpc.newStub(channel);
     }
 
     public void shutdown() throws InterruptedException {

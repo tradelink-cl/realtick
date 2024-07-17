@@ -1,19 +1,14 @@
 package exemplo;
 
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
-
 import io.grpc.netty.shaded.io.netty.handler.ssl.*;
 import realtick.grpc.Utilities;
 import realtick.grpc.UtilityServicesGrpc;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 public class SrpConnectExample2 {
@@ -46,7 +41,7 @@ public class SrpConnectExample2 {
                 .sslContext(sslContext)
                 .build();
 
-        blockingStub = UtilityServicesGrpc.newBlockingStub(channel);
+        //blockingStub = UtilityServicesGrpc.newBlockingStub(channel);
     }
 
     public void shutdown() throws InterruptedException {

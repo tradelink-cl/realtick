@@ -5,9 +5,7 @@ import "google/protobuf/wrappers.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "utilities.proto";
-
-package realtick.grpc;
-
+option java_package = "realtick.grpc";
 
 message SubmitSingleOrderRequest{
   string Symbol = 1;

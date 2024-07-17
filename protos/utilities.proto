@@ -3,8 +3,7 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
-
-package realtick.grpc;
+option java_package = "realtick.grpc";
 
 message ServerAcknowledgement{
   enum ResponseCodesEnum{

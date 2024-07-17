@@ -12,7 +12,6 @@ import realtick.grpc.Utilities;
 import realtick.grpc.UtilityServicesGrpc;
 
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -63,6 +62,7 @@ public class SrpConnectExample {
                     .build();
 
             try {
+
                 Utilities.ConnectResponse  connect= blockingStub.connect(startLoginSrpRequest);
                 log.info("Start SRP result: " + connect.getResponse());
 
