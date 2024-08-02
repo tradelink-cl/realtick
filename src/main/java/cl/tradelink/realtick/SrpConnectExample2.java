@@ -1,12 +1,11 @@
-package exemplo;
+package cl.tradelink.realtick;
 
+import com.ezesoft.xapi.generated.Utilities;
+import com.ezesoft.xapi.generated.UtilityServicesGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.*;
-import realtick.grpc.Utilities;
-import realtick.grpc.UtilityServicesGrpc;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
