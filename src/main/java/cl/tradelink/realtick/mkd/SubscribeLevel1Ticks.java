@@ -2,13 +2,14 @@ package cl.tradelink.realtick.mkd;
 
 import cl.tradelink.realtick.config.EMSXAPILibrary;
 import com.ezesoft.xapi.generated.Marketdata;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ExampleSubscribeLevel1Ticks {
+public class SubscribeLevel1Ticks {
+
     public void run() {
+
         EMSXAPILibrary lib = null;
         try{
 
@@ -17,7 +18,7 @@ public class ExampleSubscribeLevel1Ticks {
             //symbolsList.add("VOD.LSE`");
             //symbolsList.add("BARC.LSE`");
 
-            symbolsList.add("AAPL");
+            //symbolsList.add("AAPL");
 
 
 
@@ -36,8 +37,8 @@ public class ExampleSubscribeLevel1Ticks {
                 System.out.println(data.toString());                
                 System.out.println("------------------------------");
              }
-        }
-        catch(Exception ex){
+
+        } catch(Exception ex){
             System.out.println("Error - "+ ex.getMessage());
         }
     }

@@ -1,12 +1,9 @@
 package cl.tradelink.realtick;
 
 import cl.tradelink.realtick.config.EMSXAPILibrary;
-import cl.tradelink.realtick.mkd.ExampleSubscribeLevel1Ticks;
 import com.ezesoft.xapi.generated.MarketDataServiceGrpc;
-import com.ezesoft.xapi.generated.Utilities;
 import com.ezesoft.xapi.generated.UtilityServicesGrpc;
 import io.grpc.ManagedChannel;
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.grpc.netty.shaded.io.netty.handler.ssl.ApplicationProtocolNames;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
@@ -16,7 +13,6 @@ import javax.net.ssl.SSLException;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,12 +59,14 @@ public class MarketDataClient {
                 System.out.println(lib.getUserToken());
                 lib.startListeningHeartbeat(5);
 
+                /*
+
                 CompletableFuture<Void> subscribeLevel1TicksAsync = CompletableFuture.runAsync(() -> {
-                    ExampleSubscribeLevel1Ticks subscribeLevel1TicksExample = new ExampleSubscribeLevel1Ticks();
+                    SubscribeLevel1Ticks subscribeLevel1TicksExample = new SubscribeLevel1Ticks();
                     subscribeLevel1TicksExample.run();
                 });
 
-
+                 */
 
             } catch (Exception ex){
                 log.error(ex.getMessage(), ex);
@@ -114,15 +112,6 @@ public class MarketDataClient {
             lib = null;
         }
     }
-
-
-
-
-
-
-
-
-
 
 
     public MarketDataClient(String host, int port) throws SSLException {

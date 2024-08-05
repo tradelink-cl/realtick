@@ -3,7 +3,7 @@ package cl.tradelink.realtick.routing;
 import cl.tradelink.realtick.config.EMSXAPILibrary;
 import com.ezesoft.xapi.generated.Order;
 
-public class ExampleSubmitSingleOrder {
+public class SubmitSingleOrder {
     public void run() {
         EMSXAPILibrary lib = null;
         try{

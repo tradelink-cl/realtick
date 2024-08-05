@@ -6,6 +6,7 @@
     <groupId>cl.tradelink</groupId>
     <artifactId>realtick</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>Realtick</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
