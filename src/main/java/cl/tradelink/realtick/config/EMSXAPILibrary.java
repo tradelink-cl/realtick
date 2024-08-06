@@ -24,13 +24,27 @@ import java.util.concurrent.TimeUnit;
 
 public class EMSXAPILibrary {
 
-    public EMSXAPILibrary(String configFileName) throws Exception {
+    private EMSXAPILibrary(String configFileName) throws Exception {
         this.config = new EMSXAPIConfig(configFileName);
         this.openChannel();
     }
 
-    public Object instanceLock = new Object();
-    public EMSXAPILibrary instance;
+    private static Object instanceLock = new Object();
+    private static EMSXAPILibrary instance;
+
+    public static void Create(String configFileName)
+            throws Exception {
+        if(configFileName == null || configFileName == "")
+            configFileName = "config.cfg";
+        synchronized (instanceLock) {
+            instance = new EMSXAPILibrary(configFileName);
+        }
+    }
+
+    public static EMSXAPILibrary Get(){
+        return instance;
+    }
+
 
     public ErrorHandler errorHandler;
     private ManagedChannel _channel;
@@ -41,7 +55,7 @@ public class EMSXAPILibrary {
 
     private EMSXAPIConfig config;
     private String userToken;
-    private Thread heartBeatThread;   
+    private Thread heartBeatThread;
 
 
     private boolean isLoggedIn;
@@ -162,7 +176,7 @@ public class EMSXAPILibrary {
                 System.out.println(errorMessage);
             }
         } catch (Exception e) {
-          e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -181,7 +195,7 @@ public class EMSXAPILibrary {
     public void openChannel() throws NetworkFailedException, ServerNotAvailableException {
         if(!this.canConnectToInternet()){
             throw new NetworkFailedException(
-                "Network not available");
+                    "Network not available");
         }
         if (this.canConnectToServer()) {
             this.closeChannel();

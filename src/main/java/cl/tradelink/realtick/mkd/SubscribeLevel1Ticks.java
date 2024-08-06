@@ -20,9 +20,9 @@ public class SubscribeLevel1Ticks {
                                             .setUserToken(lib.getUserToken())
                                             .setAdvise(true)
                                             .setRequest(true)
-                                            .addAllSymbols(symbolsList)
+                                            .addSymbols(symbol)
                                             .build();
-           
+
             Iterator<com.ezesoft.xapi.generated.Marketdata.Level1MarketDataResponse> responseIt =  lib.getMarketDataServiceStub().subscribeLevel1Ticks(req);
             while(responseIt.hasNext()){
 
