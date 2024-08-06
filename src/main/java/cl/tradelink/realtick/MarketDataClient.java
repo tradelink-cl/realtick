@@ -40,44 +40,35 @@ public class MarketDataClient {
                 properties = new Properties();
                 properties.load(fis);
 
-                EMSXAPILibrary.Create(properties.getProperty("config"));
-                EMSXAPILibrary templib = EMSXAPILibrary.Get();
+                EMSXAPILibrary lib = new EMSXAPILibrary(properties.getProperty("config"));
 
-                templib.login();
-                templib.startListeningHeartbeat(5);
+                lib.login();
+                lib.startListeningHeartbeat(5);
 
                 CompletableFuture<Void> subscribeLevel1TicksAsync = CompletableFuture.runAsync(() -> {
                     SubscribeLevel1Ticks subscribeLevel1TicksExample = new SubscribeLevel1Ticks();
-                    subscribeLevel1TicksExample.run("SQM", templib);
+                    subscribeLevel1TicksExample.run("SQM", lib);
                 });
 
 
-                EMSXAPILibrary.Create(properties.getProperty("config"));
-                EMSXAPILibrary templib2 = EMSXAPILibrary.Get();
-
-                templib2.login();
-
-                templib2.startListeningHeartbeat(5);
+                EMSXAPILibrary lib2 = new EMSXAPILibrary(properties.getProperty("config"));
+                lib2.login();
+                lib2.startListeningHeartbeat(5);
 
                 CompletableFuture<Void> subscribeLevel1TicksAsync2 = CompletableFuture.runAsync(() -> {
                     SubscribeLevel1Ticks subscribeLevel1TicksExample = new SubscribeLevel1Ticks();
-                    subscribeLevel1TicksExample.run("BCH", templib2);
+                    subscribeLevel1TicksExample.run("BCH", lib2);
                 });
 
 
-                EMSXAPILibrary.Create(properties.getProperty("config"));
-                EMSXAPILibrary templib3 = EMSXAPILibrary.Get();
-
-                templib3.login();
-
-                templib3.startListeningHeartbeat(5);
+                EMSXAPILibrary lib3 = new EMSXAPILibrary(properties.getProperty("config"));
+                lib3.login();
+                lib3.startListeningHeartbeat(5);
 
                 CompletableFuture<Void> subscribeLevel1TicksAsync3 = CompletableFuture.runAsync(() -> {
                     SubscribeLevel1Ticks subscribeLevel1TicksExample = new SubscribeLevel1Ticks();
-                    subscribeLevel1TicksExample.run("AAPL", templib3);
+                    subscribeLevel1TicksExample.run("AAPL", lib3);
                 });
-
-
 
             } catch (Exception ex){
                 log.error(ex.getMessage(), ex);

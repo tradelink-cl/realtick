@@ -24,27 +24,13 @@ import java.util.concurrent.TimeUnit;
 
 public class EMSXAPILibrary {
 
-    private EMSXAPILibrary(String configFileName) throws Exception {
+    public EMSXAPILibrary(String configFileName) throws Exception {
         this.config = new EMSXAPIConfig(configFileName);
         this.openChannel();
     }
 
-    private static Object instanceLock = new Object();
-    private static EMSXAPILibrary instance;
-
-    public static void Create(String configFileName)
-            throws Exception {
-        if(configFileName == null || configFileName == "")
-                configFileName = "config.cfg";
-        synchronized (instanceLock) {
-            instance = new EMSXAPILibrary(configFileName);
-        }
-    }
-
-    public static EMSXAPILibrary Get(){
-        return instance;
-    }
-
+    public Object instanceLock = new Object();
+    public EMSXAPILibrary instance;
 
     public ErrorHandler errorHandler;
     private ManagedChannel _channel;

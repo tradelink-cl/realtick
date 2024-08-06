@@ -7,7 +7,7 @@ public class SubmitSingleOrder {
     public void run() {
         EMSXAPILibrary lib = null;
         try{
-            lib = EMSXAPILibrary.Get();
+            //lib = EMSXAPILibrary.Get();
 
             Order.SubmitSingleOrderRequest req = Order.SubmitSingleOrderRequest.newBuilder()
                                             .setUserToken(lib.getUserToken())

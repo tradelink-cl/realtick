@@ -11,7 +11,7 @@ public class SubscribeOrdInfo {
 
         EMSXAPILibrary lib = null;
         try{
-            lib = EMSXAPILibrary.Get();
+           // lib = EMSXAPILibrary.Get();
 
             SubscribeOrderInfoRequest req = SubscribeOrderInfoRequest.newBuilder()
                                             .setUserToken(lib.getUserToken())
