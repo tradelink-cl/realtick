@@ -1,6 +1,7 @@
 package cl.tradelink.realtick;
 
 import cl.tradelink.realtick.config.EMSXAPILibrary;
+import cl.tradelink.realtick.mkd.SubscribeLevel1Ticks;
 import com.ezesoft.xapi.generated.MarketDataServiceGrpc;
 import com.ezesoft.xapi.generated.UtilityServicesGrpc;
 import io.grpc.ManagedChannel;
@@ -13,6 +14,7 @@ import javax.net.ssl.SSLException;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +31,6 @@ public class MarketDataClient {
 
     public static void main(String[] args) {
 
-        EMSXAPILibrary lib = null;
 
         try {
 
@@ -42,37 +43,50 @@ public class MarketDataClient {
                 EMSXAPILibrary.Create(properties.getProperty("config"));
                 EMSXAPILibrary templib = EMSXAPILibrary.Get();
 
-                templib.errorHandler = (Throwable e) -> {
-                    System.out.println("===error in library===");
-                    System.out.println(e.toString());
-                    if(templib != null){
-                        templib.suspendHeartbeatThread();
-                        templib.logout();
-                        templib.closeChannel();
-                    }
-
-                };
-
-                lib = templib;
-
-                lib.login();
-                System.out.println(lib.getUserToken());
-                lib.startListeningHeartbeat(5);
-
-                /*
+                templib.login();
+                templib.startListeningHeartbeat(5);
 
                 CompletableFuture<Void> subscribeLevel1TicksAsync = CompletableFuture.runAsync(() -> {
                     SubscribeLevel1Ticks subscribeLevel1TicksExample = new SubscribeLevel1Ticks();
-                    subscribeLevel1TicksExample.run();
+                    subscribeLevel1TicksExample.run("SQM", templib);
                 });
 
-                 */
+
+                EMSXAPILibrary.Create(properties.getProperty("config"));
+                EMSXAPILibrary templib2 = EMSXAPILibrary.Get();
+
+                templib2.login();
+
+                templib2.startListeningHeartbeat(5);
+
+                CompletableFuture<Void> subscribeLevel1TicksAsync2 = CompletableFuture.runAsync(() -> {
+                    SubscribeLevel1Ticks subscribeLevel1TicksExample = new SubscribeLevel1Ticks();
+                    subscribeLevel1TicksExample.run("BCH", templib2);
+                });
+
+
+                EMSXAPILibrary.Create(properties.getProperty("config"));
+                EMSXAPILibrary templib3 = EMSXAPILibrary.Get();
+
+                templib3.login();
+
+                templib3.startListeningHeartbeat(5);
+
+                CompletableFuture<Void> subscribeLevel1TicksAsync3 = CompletableFuture.runAsync(() -> {
+                    SubscribeLevel1Ticks subscribeLevel1TicksExample = new SubscribeLevel1Ticks();
+                    subscribeLevel1TicksExample.run("AAPL", templib3);
+                });
+
+
 
             } catch (Exception ex){
                 log.error(ex.getMessage(), ex);
             }
 
 
+            while (true){
+                Thread.sleep(1000);
+            }
 
 
 
@@ -101,15 +115,6 @@ public class MarketDataClient {
 
         } catch (Exception ex) {
             System.out.println(ex.toString());
-        } finally {
-            if (lib != null) {
-                lib.suspendHeartbeatThread();
-                System.out.println("going to disconnect");
-                lib.logout();
-                System.out.println("going to closeChannel");
-                lib.closeChannel();
-            }
-            lib = null;
         }
     }
 
