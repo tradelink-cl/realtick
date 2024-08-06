@@ -1,12 +1,21 @@
 package cl.tradelink.realtick.routing;
 
 import cl.tradelink.realtick.config.EMSXAPILibrary;
+import cl.tradelink.realtick.mkd.SubscribeLevel1Ticks;
+import com.ezesoft.xapi.generated.Order;
 import com.ezesoft.xapi.generated.Order.SubscribeOrderInfoRequest;
 import com.ezesoft.xapi.generated.Order.SubscribeOrderInfoResponse;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.FileInputStream;
 import java.util.Iterator;
+import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 public class SubscribeOrdInfo {
+
+    /*
     public void run() {
 
         EMSXAPILibrary lib = null;
@@ -21,6 +30,7 @@ public class SubscribeOrdInfo {
                                             .build();
            
             Iterator<SubscribeOrderInfoResponse> responseIt =  lib.getOrderServiceStub().subscribeOrderInfo(req);
+
             while(responseIt.hasNext()){
                 SubscribeOrderInfoResponse data = responseIt.next();
 
@@ -32,5 +42,52 @@ public class SubscribeOrdInfo {
         catch(Exception ex){
             System.out.println("Error - "+ ex.getMessage());
         }
+    }
+
+     */
+
+
+    public static void main(String[] args) {
+
+        Properties properties;
+
+        try (FileInputStream fis = new FileInputStream(args[0])) {
+
+            properties = new Properties();
+            properties.load(fis);
+
+            EMSXAPILibrary.Create(properties.getProperty("config"));
+            EMSXAPILibrary templib = EMSXAPILibrary.Get();
+            templib.login();
+
+            Order.SubscribeOrderInfoRequest req = Order.SubscribeOrderInfoRequest.newBuilder()
+                    .setUserToken(templib.getUserToken())
+                    .setIncludeExchangeTradeOrder(true)
+                    .setIncludeUserSubmitStagedOrder(true)
+                    .build();
+
+            Iterator<Order.SubscribeOrderInfoResponse> responseIt =  templib.getOrderServiceStub().subscribeOrderInfo(req);
+
+            while(responseIt.hasNext()){
+
+                Order.SubscribeOrderInfoResponse data = responseIt.next();
+
+                System.out.println("------------------------------");
+                System.out.println(data.toString());
+                System.out.println("------------------------------");
+            }
+
+
+            while (true){
+                Thread.sleep(10);
+            }
+
+
+        } catch (Exception ex){
+            log.error(ex.getMessage(), ex);
+        }
+
+
+
     }
 }

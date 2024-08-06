@@ -52,10 +52,13 @@ public class MarketDataClient {
                 });
 
 
+                /*
                 CompletableFuture.runAsync(() -> {
                     SubscribeLevel1Ticks subscribeLevel1TicksExample = new SubscribeLevel1Ticks();
                     subscribeLevel1TicksExample.run("BCH", templib);
                 });
+
+                 */
 
 
                 /*
