@@ -6,9 +6,7 @@ import com.ezesoft.xapi.generated.Utilities;
 import com.google.protobuf.DoubleValue;
 import com.google.protocolbuff.g.IDGenerator;
 import lombok.extern.slf4j.Slf4j;
-
 import java.io.FileInputStream;
-import java.util.Iterator;
 import java.util.Properties;
 
 @Slf4j
@@ -34,7 +32,8 @@ public class SubmitSingleOrder {
                     .setSide("BUY")
                     .setTimeInForce(Utilities.ExpirationType.newBuilder().setExpiration(Utilities.ExpirationType.ExpirationTypes.DAY))
                     .setQuantity(1)
-                    .setRoute("G-BULL-SOR-US")
+                    //.setRoute("G-BULL-SOR-US")
+                    .setRoute("BULL-ARCAX")
                     .setPrice(DoubleValue.newBuilder().setValue(100).build())
                     .setPriceType(Utilities.PriceTypeEnum.newBuilder().setPriceTypeValue(1))
                     .setStaged(false)
@@ -42,13 +41,14 @@ public class SubmitSingleOrder {
                     .setAccount("BULL;00;BLTK;50D200452")
                     .build();
 
+
+
+
             Order.SubmitSingleOrderResponse response =  templib.getOrderServiceStub().submitSingleOrder(req);
 
             System.out.println("------------------------------");
             System.out.println(response.toString());
             System.out.println("---");
-
-
 
             /*
             String orderid = response.getOrderDetails().getOrderId();

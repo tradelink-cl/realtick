@@ -63,7 +63,11 @@ public class SubscribeOrdInfo {
             Order.SubscribeOrderInfoRequest req = Order.SubscribeOrderInfoRequest.newBuilder()
                     .setUserToken(templib.getUserToken())
                     .setIncludeExchangeTradeOrder(true)
-                    .setIncludeUserSubmitStagedOrder(true)
+                    .setIncludeUserSubmitChange(true)
+                    .setIncludeUserSubmitCancel(true)
+                    .setIncludeExchangeAcceptOrder(true)
+                    .setIncludeUserSubmitOrder(true)
+                    .setIncludeUserSubmitTradeReport(true)
                     .build();
 
             Iterator<Order.SubscribeOrderInfoResponse> responseIt =  templib.getOrderServiceStub().subscribeOrderInfo(req);
@@ -72,10 +76,20 @@ public class SubscribeOrdInfo {
 
                 Order.SubscribeOrderInfoResponse data = responseIt.next();
 
-                System.out.println("------------------------------");
-                System.out.println(data.toString());
-                System.out.println("------------------------------");
+                if(data.getCurrentStatus().equals("LIVE")){
+                    System.out.println(data.getCurrentStatus());
+                }
+
             }
+
+
+
+
+
+
+            Order.SubmitTradeReportRequest reqq = Order.SubmitTradeReportRequest.newBuilder()
+                    .setUserToken(templib.getUserToken())
+                    .build();
 
 
             while (true){

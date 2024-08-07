@@ -19,6 +19,18 @@
     <dependencies>
 
         <dependency>
+            <groupId>com.eclipse</groupId>
+            <artifactId>principal-module</artifactId>
+            <version>1.4.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.quickfixj</groupId>
+                    <artifactId>quickfixj-all</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
             <groupId>com.yworks</groupId>
             <artifactId>yguard</artifactId>
             <version>4.1.0</version>
