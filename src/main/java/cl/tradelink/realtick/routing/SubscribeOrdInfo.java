@@ -76,20 +76,16 @@ public class SubscribeOrdInfo {
 
                 Order.SubscribeOrderInfoResponse data = responseIt.next();
 
+                log.info("{} {}", data.getOriginalOrderId() , data.getTimeStamp());
+
+                /*
                 if(data.getCurrentStatus().equals("LIVE")){
                     System.out.println(data.getCurrentStatus());
                 }
 
+                 */
+
             }
-
-
-
-
-
-
-            Order.SubmitTradeReportRequest reqq = Order.SubmitTradeReportRequest.newBuilder()
-                    .setUserToken(templib.getUserToken())
-                    .build();
 
 
             while (true){

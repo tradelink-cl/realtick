@@ -32,7 +32,6 @@ public class SubmitSingleOrder {
                     .setSide("BUY")
                     .setTimeInForce(Utilities.ExpirationType.newBuilder().setExpiration(Utilities.ExpirationType.ExpirationTypes.DAY))
                     .setQuantity(1)
-                    //.setRoute("G-BULL-SOR-US")
                     .setRoute("BULL-ARCAX")
                     .setPrice(DoubleValue.newBuilder().setValue(100).build())
                     .setPriceType(Utilities.PriceTypeEnum.newBuilder().setPriceTypeValue(1))
@@ -42,15 +41,14 @@ public class SubmitSingleOrder {
                     .build();
 
 
-
-
+            /*
             Order.SubmitSingleOrderResponse response =  templib.getOrderServiceStub().submitSingleOrder(req);
 
             System.out.println("------------------------------");
             System.out.println(response.toString());
             System.out.println("---");
 
-            /*
+
             String orderid = response.getOrderDetails().getOrderId();
 
 
@@ -82,12 +80,14 @@ public class SubmitSingleOrder {
             System.out.println(responseCancel.toString());
             System.out.println("------------------------------");
 
-             */
+
 
 
             while (true){
                 Thread.sleep(100);
             }
+
+             */
 
 
         } catch (Exception ex){
