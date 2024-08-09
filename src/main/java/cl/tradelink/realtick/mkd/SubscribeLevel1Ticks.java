@@ -13,9 +13,6 @@ public class SubscribeLevel1Ticks {
 
         try{
 
-            List<String> symbolsList = new ArrayList<>();
-            symbolsList.add(symbol);
-
             Marketdata.Level1MarketDataRequest req = com.ezesoft.xapi.generated.Marketdata.Level1MarketDataRequest.newBuilder()
                                             .setUserToken(lib.getUserToken())
                                             .setAdvise(true)
@@ -28,15 +25,12 @@ public class SubscribeLevel1Ticks {
 
                 com.ezesoft.xapi.generated.Marketdata.Level1MarketDataResponse data = responseIt.next();
 
-
                 if(data.getBid().getDecimalValue() > 0){
                     System.out.println(data.getSymbolDesc() + " " + data.getBid().getDecimalValue());
                 }
-
                 if(data.getAsk().getDecimalValue() > 0){
                     System.out.println(data.getSymbolDesc() + " " + data.getAsk().getDecimalValue());
                 }
-
              }
 
         } catch(Exception ex){

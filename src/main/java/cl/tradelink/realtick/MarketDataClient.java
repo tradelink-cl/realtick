@@ -51,14 +51,10 @@ public class MarketDataClient {
                     subscribeLevel1TicksExample.run("SQM", templib);
                 });
 
-
-                /*
                 CompletableFuture.runAsync(() -> {
                     SubscribeLevel1Ticks subscribeLevel1TicksExample = new SubscribeLevel1Ticks();
                     subscribeLevel1TicksExample.run("BCH", templib);
                 });
-
-                 */
 
 
                 /*
